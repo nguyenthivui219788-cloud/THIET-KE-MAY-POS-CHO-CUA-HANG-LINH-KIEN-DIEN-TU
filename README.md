@@ -62,6 +62,15 @@ Hệ thống **Web POS (Techno POS / PC-POS)** được xây dựng nhằm giả
 1. **Clone repository về máy:**
    ```bash
    git clone [https://github.com/nguyenthivui219788-cloud/THIET-KE-MAY-POS-CHO-CUA-HANG-LINH-KIEN-DIEN-TU.git](https://github.com/nguyenthivui219788-cloud/THIET-KE-MAY-POS-CHO-CUA-HANG-LINH-KIEN-DIEN-TU.git)
+Cấu hình Cơ sở dữ liệu:
 
-© 2026 - Phát triển bởi Nguyễn Lê Thanh Tâm. Dành cho mục đích học tập và nghiên cứu khoa học.
-   
+Import file cấu hình CSDL MySQL vào hệ quản trị cơ sở dữ liệu của bạn.
+
+Chạy ứng dụng:
+
+Mở dự án bằng trình soạn thảo (ví dụ: VS Code).
+
+Sử dụng extension Live Server để chạy file giao diện chính (index.html hoặc thư mục nguồn tương ứng) trên trình duyệt.
+
+🙏 Lời cảm ơn
+Em xin gửi lời cảm ơn chân thành đến TS. Nguyễn Văn Dũng – giảng viên hướng dẫn trực tiếp, đã tận tình định hướng phương pháp luận, hỗ trợ tháo gỡ các vướng mắc kỹ thuật để em hoàn thành xuất sắc đồ án này. Em cũng xin chân thành cảm ơn Ban Giám hiệu Trường Đại học Hùng Vương TP.HCM cùng Khoa Kỹ thuật Công nghệ đã tạo mọi điều kiện thuận lợi về cơ sở vật chất trong suốt quá trình học tập và nghiên cứu.
