@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script src="auth_guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang quản lý lịch sử giao dịch - Techno Admin Dashboard.">
+    <title>Lịch sử giao dịch - Techno Admin</title>
+    <!-- Google Fonts: Inter và Rajdhani -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lichsugiaodich.css">
+    <style>
+        .notification-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 320px;
+            background-color: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            overflow: hidden;
+            animation: dropdownFadeIn 0.2s ease;
+        }
+
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification-header {
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-dark);
+            border-bottom: 1.5px solid var(--border-color);
+            background-color: var(--bg-main);
+        }
+
+        .notification-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-align: left;
+        }
+
+        .notification-item:hover { background-color: #F8FAFC; }
+        .notification-item.unread { background-color: #F0F9FF; border-left: 3px solid #3B82F6; }
+        .notification-title { font-size: 12.5px; font-weight: 600; color: var(--text-dark); }
+        .notification-desc { font-size: 11px; color: var(--text-body); margin-top: 3px; line-height: 1.4; }
+        .notification-time { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: #151824;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2000;
+            font-size: 12.5px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid #10B981;
+        }
+        
+        .header-profile-widget {
+            cursor: pointer;
+        }
+        .header-profile-widget:hover {
+            background-color: var(--bg-main);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ==========================================================================
+           SIDEBAR ĐIỀU HƯỚNG BÊN TRÁI (TỐI)
+           ========================================================================== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="sidebar-brand-name">
+                    <span class="brand-text-white">Techno</span>
+                    <span class="brand-text-red">ADMIN</span>
+                </div>
+            </div>
+
+            <!-- Menu Navigation Links -->
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="../09_Phan_He_Dashboard/dashboard.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="9"></rect>
+                                    <rect x="14" y="3" width="7" height="5"></rect>
+                                    <rect x="14" y="12" width="7" height="9"></rect>
+                                    <rect x="3" y="16" width="7" height="5"></rect>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../06_Phan_He_Quan_Ly_SanPham/quanlisanpham.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Quản lý sản phẩm</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../03_Phan_He_Quan_Ly_Nhan_Vien/quanlynhanvien.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Quản lý nhân viên</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../08_Phan_He_Lich_Su_Giao_Dich/lichsugiaodich.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Lịch sử giao dịch</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="../10_Phan_He_Voucher/voucher.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                    <line x1="4" y1="22" x2="4" y2="15"></line>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Voucher</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-user" id="sidebarUserDropdownBtn">
+                <div class="user-avatar-wrapper">
+                    <div class="user-avatar-letter">A</div>
+                </div>
+                <div class="user-info">
+                    <span class="user-name-text">user admin</span>
+                    <span class="user-role-text">Super Admin</span>
+                </div>
+                <span class="user-dropdown-arrow">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+                
+                <!-- Dropdown Menu -->
+                <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+                    <a href="#" id="editProfileBtn" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Chỉnh sửa Profile
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item text-red">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================================================
+           NỘI DUNG CHÍNH (SÁNG)
+           ========================================================================== -->
+        <main class="main-content">
+            <!-- Header phía trên -->
+            <header class="main-header">
+                <div class="header-title-section">
+                    <h1>Lịch sử giao dịch <span class="header-dot">.</span></h1>
+                    <p>Quản lý và theo dõi toàn bộ lịch sử giao dịch</p>
+                </div>
+                
+                <div class="header-actions-section">
+                    <div class="header-search">
+                        <svg viewBox="0 0 24 24" width="18" height="18" class="search-icon" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="headerSearchInvoice" placeholder="Tìm kiếm khách hàng, mã đơn hàng...">
+                    </div>
+                    
+                    <!-- Nút chuông thông báo -->
+                    <div class="notification-container">
+                        <button class="header-btn notification-btn" id="notificationBtn" aria-label="Thông báo">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        
+                        <!-- Dropdown thông báo -->
+                        <div class="notification-dropdown hidden" id="notificationDropdown">
+                            <div class="notification-header">Thông báo mới</div>
+                            <div class="notification-list">
+                                <div class="notification-item unread">
+                                    <div class="notification-title">Đơn hàng mới #HD2545</div>
+                                    <div class="notification-desc">RTX 4090 24GB đã được thanh toán thành công.</div>
+                                    <div class="notification-time">5 phút trước</div>
+                                </div>
+                                <div class="notification-item unread">
+                                    <div class="notification-title">Cảnh báo Voucher</div>
+                                    <div class="notification-desc">Voucher A88 chỉ còn 1 lượt sử dụng.</div>
+                                    <div class="notification-time">1 giờ trước</div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-title">Đăng nhập mới</div>
+                                    <div class="notification-desc">Nhân viên Nam Em vừa đăng nhập hệ thống.</div>
+                                    <div class="notification-time">2 giờ trước</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="header-profile-widget" id="headerProfileWidgetBtn" title="Xem & Chỉnh sửa Profile">
+                        <div class="profile-avatar">UA</div>
+                        <div class="profile-meta">
+                            <span class="profile-name">user admin</span>
+                            <span class="profile-role">Super Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Hàng tác vụ điều khiển: Ô tìm kiếm nhanh, Datepicker, lọc trạng thái, xuất Excel -->
+            <section class="action-filters-bar">
+                <div class="left-actions">
+                    <!-- Ô tìm kiếm đơn hàng -->
+                    <div class="search-quick-box">
+                        <input type="text" id="searchInvoice" placeholder="Tìm kiếm khách hàng, mã đơn hàng...">
+                        <button class="search-btn-icon" aria-label="Tìm kiếm">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Datepicker chọn ngày giao dịch -->
+                    <div class="date-picker-wrapper">
+                        <svg viewBox="0 0 24 24" width="15" height="15" class="calendar-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <input type="date" id="searchDate">
+                    </div>
+
+                    <!-- Dropdown Lọc trạng thái đơn hàng -->
+                    <select class="select-filter" id="filterStatus">
+                        <option value="Tất cả trạng thái">Tất cả trạng thái</option>
+                        <option value="Đã thanh toán">Đã thanh toán</option>
+                        <option value="Chờ thanh toán">Chờ thanh toán</option>
+                        <option value="Đang xử lý">Đang xử lý</option>
+                        <option value="Đã hủy">Đã hủy</option>
+                    </select>
+                </div>
+
+                <div class="right-actions">
+
+
+                    <!-- Nút Đỏ Xuất Báo Cáo chính -->
+                    <button class="btn-export-main" id="btnExportAll">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Xuất báo cáo
+                    </button>
+                </div>
+            </section>
+
+            <!-- Layout Nội dung 2 cột: Danh sách trái (60%) & Chi tiết phải (40%) -->
+            <div class="transaction-body-layout">
+                <!-- Cột Trái (60%): Bảng đơn hàng -->
+                <div class="column-left">
+                    <div class="card-section">
+                        <div class="card-title-header">
+                            <h3>Danh sách giao dịch</h3>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 110px;">ID đơn hàng</th>
+                                        <th style="width: 140px;">Thời gian</th>
+                                        <th>Nhân viên</th>
+                                        <th>Khách hàng</th>
+                                        <th style="width: 130px;">Tổng tiền</th>
+                                        <th style="width: 140px;">Trạng thái</th>
+                                        <th style="width: 110px; text-align: center;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center" style="padding: 40px; color: var(--text-muted);">
+                                            Đang tải danh sách giao dịch...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Phân trang bên trái -->
+                        <div class="table-pagination-footer">
+                            <div class="footer-left-info">
+                                <span class="pagination-show-text">Hiển thị</span>
+                                <select class="select-per-page" id="perPageSelect">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                                <span class="pagination-summary-text" id="paginationSummary">1 - 10 của 10 đơn hàng</span>
+                            </div>
+
+                            <div class="footer-right-pagination" id="paginationControls">
+                                <!-- Nút phân trang bằng JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột Phải (40%): Chi tiết đơn hàng rực rỡ -->
+                <div class="column-right">
+                    <div class="card-section details-card" id="invoiceDetailsCard">
+                        <!-- Header khu vực chi tiết -->
+                        <div class="details-header-row">
+                            <h3>Chi tiết giao dịch</h3>
+                            <div class="details-header-actions">
+                                <button class="btn-action-icon gray" id="btnDeleteInvoice" title="Xóa đơn hàng">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Xóa đơn hàng
+                                </button>
+                                <button class="btn-action-icon eye" id="btnExportImageInvoice" title="Xuất ảnh giao dịch">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    Ảnh giao dịch
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Khối nội dung chi tiết hóa đơn (Sinh bằng JS) -->
+                        <div id="invoiceDetailsContent" class="details-content-scroller">
+                            <div class="text-center" style="padding: 60px 0; color: var(--text-muted);">
+                                Hãy chọn một đơn hàng bên cột trái để xem thông tin chi tiết.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- HỘP THOẠI XÁC NHẬN XÓA ĐƠN HÀNG (MODAL NHỎ) -->
+    <div class="modal-overlay hidden" id="deleteConfirmModal">
+        <div class="modal-container delete-dialog">
+            <div class="modal-header">
+                <h3>Xác nhận xóa đơn hàng</h3>
+            </div>
+            <div class="modal-body" style="padding: 16px 24px; font-size: 14px; color: var(--text-body); line-height: 1.5;">
+                Bạn có chắc chắn muốn xóa đơn hàng <strong id="deleteTargetIdText"></strong>? Hành động này sẽ gỡ hoàn toàn hóa đơn khỏi bộ nhớ và không thể khôi phục lại.
+            </div>
+            <div class="modal-footer-actions" style="padding: 16px 24px;">
+                <button type="button" class="btn-secondary" id="cancelDeleteBtn">Không, giữ lại</button>
+                <button type="button" class="btn-primary btn-danger-action" id="confirmDeleteBtn">Vẫn xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHỈNH SỬA PROFILE ADMIN -->
+    <div class="modal-overlay hidden" id="profileModal">
+        <div class="modal-container" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Chỉnh sửa Profile</h3>
+                <button class="modal-close-btn" id="btnCloseProfileModal" aria-label="Đóng" style="background: none; border: none; cursor: pointer; color: var(--text-muted);">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div class="form-group" style="align-items: center; justify-content: center; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="profile-avatar-upload-container" style="position: relative; width: 80px; height: 80px; border-radius: 50%; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background-color: #F8FAFC;">
+                        <img id="profileModalAvatarPreview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <span id="profileModalAvatarPlaceholder" style="font-size: 24px; font-weight: 700; color: #64748B;">SA</span>
+                        <input type="file" id="profileInputAvatarFile" accept="image/*" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    </div>
+                    <span style="font-size: 11px; color: #64748B; margin-top: 6px; display: block; text-align: center; width: 100%;">Nhấp để tải lên ảnh đại diện</span>
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="profileInputName" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Họ và tên *</label>
+                    <input type="text" id="profileInputName" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-md); font-size: 13.5px;" placeholder="Ví dụ: Super Admin" required>
+                </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="profileInputRole" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Chức vụ (Chỉ đọc)</label>
+                    <input type="text" id="profileInputRole" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-md); font-size: 13.5px; opacity: 0.6; cursor: not-allowed;" readonly>
+                </div>
+            </div>
+            <div class="modal-footer-actions" style="padding: 16px 24px; display: flex; justify-content: flex-end; gap: 12px; border-top: 1.5px solid var(--border-color); background-color: var(--bg-main);">
+                <button class="btn-secondary" id="btnCancelProfileModal" style="padding: 8px 16px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-md); background-color: var(--bg-card); font-size: 12.5px; font-weight: 600; cursor: pointer;">Hủy bỏ</button>
+                <button class="btn-primary" id="btnSaveProfile" style="padding: 8px 20px; border: none; border-radius: var(--border-radius-md); background-color: var(--accent-red); color: #FFFFFF; font-size: 12.5px; font-weight: 600; cursor: pointer;">Lưu thông tin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XEM TRƯỚC BILL GIAO DỊCH -->
+    <div class="modal-overlay hidden" id="billPreviewModal" style="background-color: rgba(21, 24, 36, 0.6); backdrop-filter: blur(8px); z-index: 1500;">
+        <div class="modal-container" style="max-width: 440px; background: transparent; border: none; box-shadow: none; overflow: visible; display: flex; flex-direction: column; align-items: stretch;">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                <button id="btnCloseBillPreview" style="background: rgba(21, 24, 36, 0.7); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: var(--transition-smooth); outline: none;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div style="background-color: white; border-radius: 12px; padding: 6px; overflow: hidden; display: flex; justify-content: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+                <img id="billPreviewImage" style="width: 100%; height: auto; display: block; border-radius: 8px;">
+            </div>
+            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 16px;">
+                <button id="btnDownloadBillModal" style="padding: 10px 24px; font-size: 13px; font-weight: bold; border-radius: 8px; border: none; background-color: var(--accent-red); color: white; cursor: pointer; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3); display: flex; align-items: center; gap: 6px; transition: var(--transition-smooth);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Tải Ảnh Xuống
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST THÔNG BÁO XUẤT BÁO CÁO THÀNH CÔNG -->
+    <div class="toast-notification hidden" id="toastNotification">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="toast-success-icon">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="toastText">Xuất file báo cáo đơn hàng thành công!</span>
+    </div>
+
+    <script src="lichsugiaodich.js"></script>
+</body>
+</html>

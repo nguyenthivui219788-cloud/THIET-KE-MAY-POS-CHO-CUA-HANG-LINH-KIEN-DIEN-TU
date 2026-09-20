@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script src="auth_guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang quản trị hệ thống PC-POS - Techno Admin Dashboard.">
+    <title>Techno Admin Dashboard - PC-POS</title>
+    <!-- Google Fonts: Inter cho nội dung và Rajdhani cho phong cách công nghệ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+        /* CSS cho Dropdown Thông báo & Modal Profile */
+        .notification-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 320px;
+            background-color: var(--bg-card);
+            border: 1.5px solid var(--border-color, #E2E8F0);
+            border-radius: var(--border-radius-md, 10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            overflow: hidden;
+            animation: dropdownFadeIn 0.2s ease;
+        }
+
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification-header {
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-dark, #0F172A);
+            border-bottom: 1.5px solid var(--border-color, #E2E8F0);
+            background-color: var(--bg-main, #F8F9FC);
+        }
+
+        .notification-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color, #E2E8F0);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .notification-item:hover { background-color: #F8FAFC; }
+        .notification-item.unread { background-color: #F0F9FF; border-left: 3px solid #3B82F6; }
+        .notification-title { font-size: 12.5px; font-weight: 600; color: var(--text-dark, #0F172A); }
+        .notification-desc { font-size: 11px; color: var(--text-body, #334155); margin-top: 3px; line-height: 1.4; }
+        .notification-time { font-size: 10px; color: var(--text-muted, #64748B); margin-top: 4px; }
+
+        /* Modal kính mờ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .modal-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius-lg, 16px);
+            border: 1px solid var(--border-color, #E2E8F0);
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1.5px solid var(--border-color, #E2E8F0);
+        }
+
+        .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--text-dark, #0F172A); }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted, #64748B);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close-btn:hover { color: var(--accent-red, #E11D48); }
+
+        .modal-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted, #64748B);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border-color, #E2E8F0);
+            border-radius: var(--border-radius-md, 10px);
+            font-size: 13.5px;
+            outline: none;
+            background-color: var(--bg-main, #F8F9FC);
+            color: var(--text-dark, #0F172A);
+            transition: all 0.25s ease;
+        }
+        .form-input:focus { border-color: var(--accent-red, #E11D48); background-color: var(--bg-card); }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1.5px solid var(--border-color, #E2E8F0);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background-color: var(--bg-main, #F8F9FC);
+        }
+
+        .btn-cancel {
+            padding: 8px 16px;
+            border: 1.5px solid var(--border-color, #E2E8F0);
+            border-radius: var(--border-radius-md, 10px);
+            background-color: var(--bg-card);
+            color: var(--text-body, #334155);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-cancel:hover { background-color: #F1F5F9; }
+
+        .btn-save {
+            padding: 8px 20px;
+            border: none;
+            border-radius: var(--border-radius-md, 10px);
+            background-color: var(--accent-red, #E11D48);
+            color: #FFFFFF;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(225, 29, 72, 0.15);
+        }
+        .btn-save:hover { background-color: var(--accent-dark-red, #BE123C); }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: #1E293B;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2000;
+            font-size: 12.5px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid #10B981;
+        }
+
+        .header-profile-widget {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .header-profile-widget:hover { background-color: #F1F5F9; border-radius: var(--border-radius-md, 10px); }
+
+        .hidden { display: none !important; }
+    
+        .bestseller-grid {
+            display: grid !important;
+            grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+        }
+        .bestseller-card {
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ==========================================================================
+           SIDEBAR ĐIỀU HƯỚNG BÊN TRÁI (TỐI)
+           ========================================================================== -->
+        <aside class="sidebar">
+            <!-- Brand Logo Header -->
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="sidebar-brand-name">
+                    <span class="brand-text-white">Techno</span>
+                    <span class="brand-text-red">ADMIN</span>
+                </div>
+            </div>
+
+            <!-- Menu Navigation Links (Đồng bộ 6 mục theo screenshot mới nhất) -->
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="../09_Phan_He_Dashboard/dashboard.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="9"></rect>
+                                    <rect x="14" y="3" width="7" height="5"></rect>
+                                    <rect x="14" y="12" width="7" height="9"></rect>
+                                    <rect x="3" y="16" width="7" height="5"></rect>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../06_Phan_He_Quan_Ly_SanPham/quanlisanpham.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Quản lý sản phẩm</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../03_Phan_He_Quan_Ly_Nhan_Vien/quanlynhanvien.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Quản lý nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../08_Phan_He_Lich_Su_Giao_Dich/lichsugiaodich.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Lịch sử giao dịch</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="../10_Phan_He_Voucher/voucher.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                    <line x1="4" y1="22" x2="4" y2="15"></line>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Voucher</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Sidebar User Profile Widget (bottom) -->
+            <div class="sidebar-user" id="sidebarUserDropdownBtn">
+                <div class="user-avatar-wrapper">
+                    <div class="user-avatar-letter">A</div>
+                </div>
+                <div class="user-info">
+                    <span class="user-name-text">user admin</span>
+                    <span class="user-role-text">Super Admin</span>
+                </div>
+                <span class="user-dropdown-arrow">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+                
+                <!-- Dropdown Menu -->
+                <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+                    <a href="#" id="editProfileBtn" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Chỉnh sửa Profile
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item text-red">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================================================
+           NỘI DUNG CHÍNH (SÁNG)
+           ========================================================================== -->
+        <main class="main-content">
+            <!-- Header phía trên -->
+            <header class="main-header">
+                <div class="header-title-section">
+                    <h1>Techno Admin Dashboard <span class="header-dot">.</span></h1>
+                    <p>Tổng quan hoạt động hệ thống cửa hàng linh kiện</p>
+                </div>
+                
+                <div class="header-actions-section">
+                    <!-- Thanh tìm kiếm -->
+                    <div class="header-search">
+                        <svg viewBox="0 0 24 24" width="18" height="18" class="search-icon" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" placeholder="Tìm kiếm đơn hàng, sản phẩm, khách hàng...">
+                    </div>
+                    
+                    <!-- Nút chuông thông báo -->
+                    <div class="notification-container">
+                        <button class="header-btn notification-btn" id="notificationBtn" aria-label="Thông báo">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        
+                        <!-- Dropdown thông báo -->
+                        <div class="notification-dropdown hidden" id="notificationDropdown">
+                            <div class="notification-header">Thông báo mới</div>
+                            <div class="notification-list">
+                                <div class="notification-item unread">
+                                    <div class="notification-title">Đơn hàng mới #HD2545</div>
+                                    <div class="notification-desc">RTX 4090 24GB đã được thanh toán thành công.</div>
+                                    <div class="notification-time">5 phút trước</div>
+                                </div>
+                                <div class="notification-item unread">
+                                    <div class="notification-title">Cảnh báo Voucher</div>
+                                    <div class="notification-desc">Voucher A88 chỉ còn 1 lượt sử dụng.</div>
+                                    <div class="notification-time">1 giờ trước</div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-title">Đăng nhập mới</div>
+                                    <div class="notification-desc">Nhân viên Nam Em vừa đăng nhập hệ thống.</div>
+                                    <div class="notification-time">2 giờ trước</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hiển thị tài khoản ở header giống screenshot -->
+                    <div class="header-profile-widget" id="headerProfileWidgetBtn" title="Xem & Chỉnh sửa Profile">
+                        <div class="profile-avatar">UA</div>
+                        <div class="profile-meta">
+                            <span class="profile-name">user admin</span>
+                            <span class="profile-role">Super Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Hàng thẻ chỉ số KPI phía trên (Căn giữa hoàn toàn horizontally & vertically) -->
+            <section class="kpi-grid">
+                <!-- Card 1: Doanh thu hôm nay (Đỏ Gradient) -->
+                <div class="kpi-card accent-red-card">
+                    <div class="kpi-icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12" y2="18"></line>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                    </div>
+                    <span class="kpi-label">Doanh thu hôm nay</span>
+                    <h2 class="kpi-value" id="kpiRevenueToday">20.342.000 đ</h2>
+                    <div class="kpi-subtext">
+                        <span class="trend-indicator up">↑ 12.5%</span> so với hôm qua
+                    </div>
+                </div>
+
+                <!-- Card 2: Đơn hàng mới (Tối Slate) -->
+                <div class="kpi-card accent-dark-card">
+                    <div class="kpi-icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </div>
+                    <span class="kpi-label">Đơn hàng mới</span>
+                    <h2 class="kpi-value" id="kpiNewOrders">24</h2>
+                    <div class="kpi-subtext">
+                        <span class="trend-indicator up">↑ 8 đơn</span> so với hôm qua
+                    </div>
+                </div>
+
+                <!-- Card 3: Sản phẩm sắp hết hàng (Sáng viền xám) -->
+                <div class="kpi-card light-card">
+                    <div class="kpi-icon-wrapper red-tint">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                            <rect x="1" y="3" width="22" height="5"></rect>
+                            <line x1="10" y1="12" x2="14" y2="12"></line>
+                        </svg>
+                    </div>
+                    <span class="kpi-label">Sản phẩm sắp hết hàng</span>
+                    <h2 class="kpi-value" id="kpiLowStock">8</h2>
+                    <div class="kpi-subtext">
+                        <span class="trend-indicator warn">⚠ Cần nhập thêm</span> sản phẩm
+                    </div>
+                </div>
+
+                <!-- Card 4: Tổng nhân viên (Sáng viền xám) -->
+                <div class="kpi-card light-card">
+                    <div class="kpi-icon-wrapper red-tint">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <span class="kpi-label">Tổng nhân viên</span>
+                    <h2 class="kpi-value" id="kpiTotalStaff">10</h2>
+                    <div class="kpi-subtext">
+                        <span class="trend-indicator active-dot">● Đang hoạt động</span> bình thường
+                    </div>
+                </div>
+            </section>
+
+            <!-- Layout Nội dung 2 cột -->
+            <div class="dashboard-body-layout">
+                <!-- ==========================================================
+                   CỘT TRÁI (65%): Bảng đơn hàng & Lưới sản phẩm bán chạy (Đã nâng cấp Icon)
+                   ========================================================== -->
+                <div class="body-column-left">
+                    <!-- Bảng đơn hàng gần đây -->
+                    <div class="card-section">
+                        <div class="card-section-header">
+                            <h3>Đơn hàng gần đây</h3>
+                            <a href="../08_Phan_He_Lich_Su_Giao_Dich/lichsugiaodich.html" class="btn-text-link">Xem tất cả</a>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersTableBody">
+                                    <tr>
+                                        <td class="bold text-red">TT3318</td>
+                                        <td>Tôn Đức Áo</td>
+                                        <td>RTX 4060 Ti 8GB</td>
+                                        <td>1</td>
+                                        <td class="bold">8.490.000đ</td>
+                                        <td><span class="status-badge success">Đã thanh toán</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bold text-red">TT1041</td>
+                                        <td>Rambo 255</td>
+                                        <td>RAM Corsair 16GB</td>
+                                        <td>1</td>
+                                        <td class="bold">1.690.000đ</td>
+                                        <td><span class="status-badge danger">Đã hủy</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bold text-red">TT918</td>
+                                        <td>Quang Huy</td>
+                                        <td>SSD Samsung 990 1TB</td>
+                                        <td>1</td>
+                                        <td class="bold">2.690.000đ</td>
+                                        <td><span class="status-badge warning">Đang xử lý</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bold text-red">TT111</td>
+                                        <td>and Nguru 5</td>
+                                        <td>Mainboard B760M</td>
+                                        <td>1</td>
+                                        <td class="bold">2.690.000đ</td>
+                                        <td><span class="status-badge success">Đã thanh toán</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bold text-red">TT221</td>
+                                        <td>Trần Minh</td>
+                                        <td>Nguồn Corsair 650W</td>
+                                        <td>1</td>
+                                        <td class="bold">1.390.000đ</td>
+                                        <td><span class="status-badge info">Đang giao</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Lưới sản phẩm bán chạy (Cập nhật các Icon màu sắc RGB/LED nổi bật) -->
+                    <div class="card-section">
+                        <div class="card-section-header">
+                            <h3>Sản phẩm bán chạy</h3>
+                            <a href="../06_Phan_He_Quan_Ly_SanPham/quanlisanpham.html" class="btn-text-link">Xem tất cả</a>
+                        </div>
+                        <div class="bestseller-grid" id="bestsellerGrid">
+                            <!-- Item 1: VGA -->
+                            <div class="bestseller-card">
+                                <div class="bestseller-rank">1</div>
+                                <div class="bestseller-image-wrapper">
+                                    <svg viewBox="0 0 64 64" class="product-svg">
+                                        <defs>
+                                            <linearGradient id="vgaFansDash" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" stop-color="#2D3748" />
+                                                <stop offset="100%" stop-color="#1A202C" />
+                                            </linearGradient>
+                                        </defs>
+                                        <rect x="4" y="14" width="56" height="36" rx="4" fill="#242B35" stroke="#3A4454" stroke-width="1"/>
+                                        <line x1="12" y1="50" x2="48" y2="50" stroke="#FFD700" stroke-width="2" stroke-dasharray="2 1"/>
+                                        <rect x="2" y="10" width="2" height="44" fill="#90A4AE" rx="0.5"/>
+                                        <circle cx="21" cy="32" r="11" fill="url(#vgaFansDash)" stroke="var(--accent-red)" stroke-width="1.5"/>
+                                        <circle cx="21" cy="32" r="3" fill="#A41326"/>
+                                        <circle cx="43" cy="32" r="11" fill="url(#vgaFansDash)" stroke="var(--accent-red)" stroke-width="1.5"/>
+                                        <circle cx="43" cy="32" r="3" fill="#A41326"/>
+                                    </svg>
+                                </div>
+                                <div class="bestseller-info">
+                                    <h4>RTX 4060 Ti 8GB</h4>
+                                    <span class="sales-count">Đã bán: 56</span>
+                                    <span class="price-tag">8.490.000đ</span>
+                                </div>
+                            </div>
+                            <!-- Item 2: RAM -->
+                            <div class="bestseller-card">
+                                <div class="bestseller-rank">2</div>
+                                <div class="bestseller-image-wrapper">
+                                    <svg viewBox="0 0 64 64" class="product-svg">
+                                        <defs>
+                                            <linearGradient id="ramRgbDash" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#FF007F" />
+                                                <stop offset="50%" stop-color="#7F00FF" />
+                                                <stop offset="100%" stop-color="#00F0FF" />
+                                            </linearGradient>
+                                        </defs>
+                                        <rect x="4" y="24" width="56" height="18" rx="2" fill="#1A202C"/>
+                                        <line x1="8" y1="42" x2="56" y2="42" stroke="#FFC107" stroke-width="2" stroke-dasharray="1 1"/>
+                                        <rect x="6" y="20" width="52" height="14" rx="1" fill="#2D3748"/>
+                                        <rect x="8" y="16" width="48" height="4" rx="1" fill="url(#ramRgbDash)"/>
+                                    </svg>
+                                </div>
+                                <div class="bestseller-info">
+                                    <h4>RAM Corsair 16GB</h4>
+                                    <span class="sales-count">Đã bán: 48</span>
+                                    <span class="price-tag">1.690.000đ</span>
+                                </div>
+                            </div>
+                            <!-- Item 3: SSD -->
+                            <div class="bestseller-card">
+                                <div class="bestseller-rank">3</div>
+                                <div class="bestseller-image-wrapper">
+                                    <svg viewBox="0 0 64 64" class="product-svg">
+                                        <rect x="6" y="16" width="52" height="32" rx="4" fill="#1B2228" stroke="#343E46" stroke-width="1.5"/>
+                                        <rect x="12" y="20" width="32" height="24" rx="1" fill="#A41326"/>
+                                        <rect x="14" y="22" width="28" height="6" fill="#FFFFFF"/>
+                                        <rect x="52" y="26" width="6" height="12" rx="1" fill="#FFC107" stroke-dasharray="1 1"/>
+                                    </svg>
+                                </div>
+                                <div class="bestseller-info">
+                                    <h4>SSD Samsung 990 1TB</h4>
+                                    <span class="sales-count">Đã bán: 42</span>
+                                    <span class="price-tag">2.690.000đ</span>
+                                </div>
+                            </div>
+                            <!-- Item 4: Mainboard -->
+                            <div class="bestseller-card">
+                                <div class="bestseller-rank">4</div>
+                                <div class="bestseller-image-wrapper">
+                                    <svg viewBox="0 0 64 64" class="product-svg">
+                                        <rect x="6" y="6" width="52" height="52" rx="4" fill="#121820" stroke="#1F2833" stroke-width="1"/>
+                                        <rect x="24" y="18" width="16" height="16" rx="2" fill="#2E3842" stroke="#90A4AE" stroke-width="1.5"/>
+                                        <rect x="36" y="38" width="12" height="12" rx="1" fill="#CC182C"/>
+                                        <polygon points="40,41 44,45 42,49" fill="#FFFFFF"/>
+                                        <rect x="14" y="40" width="34" height="3.5" rx="1" fill="var(--accent-red)"/>
+                                    </svg>
+                                </div>
+                                <div class="bestseller-info">
+                                    <h4>Mainboard B760M</h4>
+                                    <span class="sales-count">Đã bán: 38</span>
+                                    <span class="price-tag">2.690.000đ</span>
+                                </div>
+                            </div>
+                            <!-- Item 5: Nguồn -->
+                            <div class="bestseller-card">
+                                <div class="bestseller-rank">5</div>
+                                <div class="bestseller-image-wrapper">
+                                    <svg viewBox="0 0 64 64" class="product-svg">
+                                        <rect x="10" y="10" width="44" height="44" rx="6" fill="#1E2022" stroke="#2D3748" stroke-width="1.5"/>
+                                        <circle cx="32" cy="32" r="16" fill="none" stroke="#596A77" stroke-width="1.5"/>
+                                        <circle cx="32" cy="32" r="14" fill="#A41326"/>
+                                        <circle cx="32" cy="32" r="4" fill="#1E2022"/>
+                                    </svg>
+                                </div>
+                                <div class="bestseller-info">
+                                    <h4>Nguồn Corsair 650W</h4>
+                                    <span class="sales-count">Đã bán: 33</span>
+                                    <span class="price-tag">1.390.000đ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==========================================================
+                   CỘT PHẢI (35%): Nhân viên bán chạy & Biểu đồ Canvas (Cân bằng chiều cao)
+                   ========================================================== -->
+                <div class="body-column-right">
+                    <!-- Top 3 nhân viên bán chạy -->
+                    <div class="card-section">
+                        <div class="card-section-header">
+                            <h3>Top 3 nhân viên bán chạy trong tháng</h3>
+                            <a href="#" id="btnOpenStaffLeaderboard" class="btn-text-link">Xem tất cả</a>
+                        </div>
+                        <div class="top-employees-list" id="topEmployeesList">
+                            <!-- Employee 1 -->
+                            <div class="employee-item">
+                                <div class="employee-rank rank-1">1</div>
+                                <div class="employee-avatar">
+                                    <div class="avatar-circle font-1">UA</div>
+                                </div>
+                                <div class="employee-details">
+                                    <span class="employee-name">user admin</span>
+                                    <span class="employee-role">Super Admin</span>
+                                </div>
+                                <div class="employee-score">
+                                    <span class="badge-sales">36 đơn</span>
+                                </div>
+                            </div>
+                            <!-- Employee 2 -->
+                            <div class="employee-item">
+                                <div class="employee-rank rank-2">2</div>
+                                <div class="employee-avatar">
+                                    <div class="avatar-circle font-2">TG</div>
+                                </div>
+                                <div class="employee-details">
+                                    <span class="employee-name">techno gear</span>
+                                    <span class="employee-role">Nhân viên bán hàng</span>
+                                </div>
+                                <div class="employee-score">
+                                    <span class="badge-sales">28 đơn</span>
+                                </div>
+                            </div>
+                            <!-- Employee 3 -->
+                            <div class="employee-item">
+                                <div class="employee-rank rank-3">3</div>
+                                <div class="employee-avatar">
+                                    <div class="avatar-circle font-3">PM</div>
+                                </div>
+                                <div class="employee-details">
+                                    <span class="employee-name">pc master</span>
+                                    <span class="employee-role">Nhân viên bán hàng</span>
+                                </div>
+                                <div class="employee-score">
+                                    <span class="badge-sales">22 đơn</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Biểu đồ doanh thu 7 ngày qua -->
+                    <div class="card-section chart-section-expanded">
+                        <div class="card-section-header">
+                            <h3>Biểu đồ doanh thu 7 ngày qua</h3>
+                            <div class="currency-selector">
+                                <span>(VNĐ)</span>
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Khu vực biểu đồ Canvas tự vẽ rộng hơn -->
+                        <div class="chart-container">
+                            <canvas id="revenueChart" width="340" height="240"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL CHỈNH SỬA PROFILE ADMIN -->
+    <div class="modal-overlay hidden" id="profileModal">
+        <div class="modal-card" style="width: 400px;">
+            <div class="modal-header">
+                <h3>Chỉnh sửa Profile</h3>
+                <button class="modal-close-btn" id="btnCloseProfileModal" aria-label="Đóng">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="align-items: center; justify-content: center; margin-bottom: 12px; display: flex; flex-direction: column;">
+                    <div class="profile-avatar-upload-container" style="position: relative; width: 80px; height: 80px; border-radius: 50%; border: 2px dashed #CBD5E1; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background-color: #F8FAFC;">
+                        <img id="profileModalAvatarPreview" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <span id="profileModalAvatarPlaceholder" style="font-size: 24px; font-weight: 700; color: #64748B;">SA</span>
+                        <input type="file" id="profileInputAvatarFile" accept="image/*" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    </div>
+                    <span style="font-size: 11px; color: #64748B; margin-top: 6px; display: block; text-align: center; width: 100%;">Nhấp để tải lên ảnh đại diện</span>
+                </div>
+                <div class="form-group">
+                    <label for="profileInputName">Họ và tên *</label>
+                    <input type="text" id="profileInputName" class="form-input" placeholder="Ví dụ: Super Admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="profileInputRole">Chức vụ (Chỉ đọc)</label>
+                    <input type="text" id="profileInputRole" class="form-input" readonly style="opacity: 0.6; cursor: not-allowed;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnCancelProfileModal">Hủy bỏ</button>
+                <button class="btn-save" id="btnSaveProfile">Lưu thông tin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BẢNG XẾP HẠNG DOANH THU NHÂN VIÊN MODAL -->
+    <div id="staffRevenueModal" class="modal-backdrop hidden" style="position: fixed; inset: 0; background: rgba(21, 24, 36, 0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; transition: all 0.3s ease;">
+        <div class="modal-card" style="width: 720px; max-width: 90%; max-height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="modal-header" style="background: rgba(204, 24, 44, 0.03);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="background: rgba(204, 24, 44, 0.1); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-red);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <div style="text-align: left;">
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main);">Bảng Xếp Hạng Doanh Thu Nhân Viên</h3>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px;">Thống kê doanh số bán hàng của nhân viên thời gian thực</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="closeStaffRevenueModalBtn" aria-label="Đóng">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Bộ lọc thời gian -->
+            <div style="padding: 12px 24px; background: var(--bg-body); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; gap: 8px;">
+                    <button id="btnFilterToday" class="tab-filter-btn active" style="padding: 6px 14px; font-size: 11.5px; font-weight: 600; border-radius: 20px; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; background: var(--accent-red); color: white;">Hôm nay</button>
+                    <button id="btnFilterMonth" class="tab-filter-btn" style="padding: 6px 14px; font-size: 11.5px; font-weight: 600; border-radius: 20px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; background: var(--bg-card); color: var(--text-muted);">Tháng này</button>
+                    <button id="btnFilterAllTime" class="tab-filter-btn" style="padding: 6px 14px; font-size: 11.5px; font-weight: 600; border-radius: 20px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; background: var(--bg-card); color: var(--text-muted);">Tất cả</button>
+                </div>
+                <span id="leaderboardPeriodText" style="font-size: 12px; font-weight: 600; color: var(--accent-red);">17/07/2026</span>
+            </div>
+
+            <div class="modal-body" style="padding: 20px 24px; overflow-y: auto;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="width: 60px; text-align: center;">Hạng</th>
+                            <th>Nhân viên</th>
+                            <th>Chức vụ</th>
+                            <th style="width: 100px; text-align: center;">Số đơn</th>
+                            <th style="text-align: right; width: 140px;">Tổng doanh thu</th>
+                            <th style="text-align: right; width: 120px;">Hiệu suất</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTableBody">
+                        <!-- Sẽ nạp động qua JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION PHÁT SÁNG -->
+    <div class="toast-notification hidden" id="toastNotification">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: #10B981;">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="toastText">Thao tác thành công!</span>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

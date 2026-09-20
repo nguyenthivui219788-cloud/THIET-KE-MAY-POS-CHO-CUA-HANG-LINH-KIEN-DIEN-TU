@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script src="auth_guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang quản lý nhân viên nhân sự - Techno Admin Dashboard.">
+    <title>Quản lý nhân viên - Techno Admin</title>
+    <!-- Google Fonts: Inter và Rajdhani -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="quanlynhanvien.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- ==========================================================================
+           SIDEBAR ĐIỀU HƯỚNG BÊN TRÁI (TỐI)
+           ========================================================================== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="sidebar-brand-name">
+                    <span class="brand-text-white">Techno</span>
+                    <span class="brand-text-red">ADMIN</span>
+                </div>
+            </div>
+
+            <!-- Menu Navigation Links -->
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="../09_Phan_He_Dashboard/dashboard.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="9"></rect>
+                                    <rect x="14" y="3" width="7" height="5"></rect>
+                                    <rect x="14" y="12" width="7" height="9"></rect>
+                                    <rect x="3" y="16" width="7" height="5"></rect>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../06_Phan_He_Quan_Ly_SanPham/quanlisanpham.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Quản lý sản phẩm</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="../03_Phan_He_Quan_Ly_Nhan_Vien/quanlynhanvien.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Quản lý nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../08_Phan_He_Lich_Su_Giao_Dich/lichsugiaodich.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Lịch sử giao dịch</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="../10_Phan_He_Voucher/voucher.html">
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                    <line x1="4" y1="22" x2="4" y2="15"></line>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Voucher</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-user" id="sidebarUserDropdownBtn">
+                <div class="user-avatar-wrapper">
+                    <div class="user-avatar-letter">A</div>
+                </div>
+                <div class="user-info">
+                    <span class="user-name-text">user admin</span>
+                    <span class="user-role-text">Super Admin</span>
+                </div>
+                <span class="user-dropdown-arrow">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+                
+                <!-- Dropdown Menu -->
+                <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+                    <a href="#" id="logoutBtn" class="dropdown-item text-red">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================================================
+           NỘI DUNG CHÍNH (SÁNG)
+           ========================================================================== -->
+        <main class="main-content">
+            <!-- Header phía trên -->
+            <header class="main-header">
+                <div class="header-title-section">
+                    <h1>Quản lý nhân viên <span class="header-dot">.</span></h1>
+                    <p>Quản lý toàn bộ nhân sự trong hệ thống</p>
+                </div>
+                
+                <div class="header-actions-section">
+                    <!-- Tìm kiếm ở Header -->
+                    <div class="header-search">
+                        <svg viewBox="0 0 24 24" width="18" height="18" class="search-icon" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="staffHeaderSearchInput" placeholder="Tìm kiếm nhân viên...">
+                    </div>
+                    
+                    <button class="header-btn" aria-label="Thông báo">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    
+                    <div class="header-profile-widget" id="headerProfileWidgetBtn" title="Xem & Chỉnh sửa Profile" style="cursor: pointer;">
+                        <div class="profile-avatar">UA</div>
+                        <div class="profile-meta">
+                            <span class="profile-name">user admin</span>
+                            <span class="profile-role">Super Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Hàng tác vụ điều khiển: Nút Thêm, Dropdown lọc, và tìm kiếm nhanh -->
+            <section class="action-filters-bar">
+                <div class="left-actions">
+                    <!-- Nút đỏ thêm nhân viên -->
+                    <button class="btn-add-staff" id="openAddModalBtn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Thêm nhân viên
+                    </button>
+
+                    <!-- Dropdown Lọc vị trí vai trò -->
+                    <select class="select-filter" id="filterRole">
+                        <option value="Tất cả vị trí">Tất cả vị trí</option>
+                        <option value="Quản lý cửa hàng">Quản lý cửa hàng</option>
+                        <option value="Nhân viên bán hàng">Nhân viên bán hàng</option>
+                        <option value="Thu ngân">Thu ngân</option>
+                        <option value="Sale">Sale</option>
+                        <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+                    </select>
+
+                    <!-- Dropdown Lọc trạng thái hoạt động -->
+                    <select class="select-filter" id="filterStatus">
+                        <option value="Tất cả trạng thái">Tất cả trạng thái</option>
+                        <option value="Hoạt động">Hoạt động</option>
+                        <option value="Nghỉ việc">Nghỉ việc</option>
+                    </select>
+                </div>
+
+                <div class="right-actions">
+                    <!-- Tìm kiếm nhanh bên phải -->
+                    <div class="search-quick-box">
+                        <input type="text" id="staffQuickSearchInput" placeholder="Tìm kiếm nhanh...">
+                        <button class="search-btn-icon" aria-label="Tìm kiếm">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <!-- Card chứa Bảng quản lý nhân viên -->
+            <section class="card-section">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 110px;">ID nhân viên</th>
+                                <th style="width: 80px;">Hình ảnh</th>
+                                <th>Họ và tên</th>
+                                <th style="width: 130px;">Tài khoản</th>
+                                <th style="width: 170px;">Mật khẩu</th>
+                                <th style="width: 170px;">Vai trò</th>
+                                <th style="width: 130px;">Trạng thái</th>
+                                <th style="width: 130px; text-align: center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center" style="padding: 40px; color: var(--text-muted);">
+                                    Đang tải danh sách nhân sự hệ thống...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer chứa thông tin và phân trang -->
+                <div class="table-pagination-footer">
+                    <div class="footer-left-info">
+                        <span class="pagination-show-text">Hiển thị</span>
+                        <select class="select-per-page" id="perPageSelect">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span class="pagination-summary-text" id="paginationSummary">1 - 7 của 7 nhân viên</span>
+                    </div>
+
+                    <div class="footer-right-pagination" id="paginationControls">
+                        <!-- Nút phân trang sẽ được render bằng JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+       HỘP THOẠI MODAL THÊM / SỬA NHÂN VIÊN
+       ========================================================================== -->
+    <div class="modal-overlay hidden" id="staffModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">Thêm nhân viên mới</h3>
+                <button class="modal-close-btn" id="closeModalBtn" aria-label="Đóng">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="staffForm" class="modal-form">
+                <input type="hidden" id="formStaffId">
+                
+                <div class="form-group">
+                    <label for="formStaffName">Họ và tên <span class="required">*</span></label>
+                    <input type="text" id="formStaffName" required placeholder="Nhập đầy đủ họ và tên nhân viên...">
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="formStaffUsername">Tài khoản (Username) <span class="required">*</span></label>
+                        <input type="text" id="formStaffUsername" required placeholder="Tên đăng nhập...">
+                    </div>
+                    <div class="form-group">
+                        <label for="formStaffPassword">Mật khẩu (Password) <span class="required">*</span></label>
+                        <input type="text" id="formStaffPassword" required placeholder="Mật khẩu...">
+                    </div>
+                </div>
+
+                <!-- Tải ảnh chân dung nhân viên lên (Base64) -->
+                <div class="form-group">
+                    <label>Ảnh chân dung nhân viên</label>
+                    <div class="image-upload-zone" id="imageUploadZone">
+                        <input type="file" id="formStaffImage" accept="image/*" style="display: none;">
+                        
+                        <!-- Trạng thái trống -->
+                        <div class="upload-zone-content" id="uploadZoneContent">
+                            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                <circle cx="12" cy="13" r="4"></circle>
+                            </svg>
+                            <span class="upload-text">Nhấp vào đây để chọn ảnh chân dung nhân viên</span>
+                            <span class="upload-hint">Định dạng JPG, PNG, WEBP (Tối đa 2MB)</span>
+                        </div>
+
+                        <!-- Trạng thái xem trước ảnh -->
+                        <div class="upload-preview-container hidden" id="uploadPreviewContainer">
+                            <img src="" alt="Xem trước chân dung" class="upload-preview-img" id="uploadPreviewImg">
+                            <button type="button" class="btn-remove-preview" id="btnRemovePreview" title="Xóa ảnh chân dung">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="formStaffRole">Vai trò vị trí <span class="required">*</span></label>
+                        <select id="formStaffRole" required>
+                            <option value="" disabled selected>Chọn vị trí</option>
+                            <option value="Quản lý cửa hàng">Quản lý cửa hàng</option>
+                            <option value="Nhân viên bán hàng">Nhân viên bán hàng</option>
+                            <option value="Thu ngân">Thu ngân</option>
+                            <option value="Sale">Sale</option>
+                            <option value="Kỹ thuật viên">Kỹ thuật viên</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="formStaffStatus">Trạng thái làm việc <span class="required">*</span></label>
+                        <select id="formStaffStatus" required>
+                            <option value="Hoạt động">Hoạt động</option>
+                            <option value="Nghỉ việc">Nghỉ việc</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer-actions">
+                    <button type="button" class="btn-secondary" id="cancelModalBtn">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu nhân sự</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- HỘP THOẠI XÁC NHẬN XÓA NHÂN VIÊN -->
+    <div class="modal-overlay hidden" id="deleteConfirmModal">
+        <div class="modal-container delete-dialog">
+            <div class="modal-header">
+                <h3>Xác nhận xóa nhân sự</h3>
+            </div>
+            <div class="modal-body" style="padding: 16px 24px; font-size: 14px; color: var(--text-body); line-height: 1.5;">
+                Bạn có chắc chắn muốn xóa nhân sự <strong id="deleteTargetName"></strong> khỏi danh sách nhân sự của hệ thống? Dữ liệu tài khoản của nhân sự này cũng sẽ bị gỡ bỏ.
+            </div>
+            <div class="modal-footer-actions" style="padding: 16px 24px;">
+                <button type="button" class="btn-secondary" id="cancelDeleteBtn">Không, giữ lại</button>
+                <button type="button" class="btn-primary btn-danger-action" id="confirmDeleteBtn">Vẫn xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HỘP THOẠI XEM CHI TIẾT NHÂN VIÊN -->
+    <div class="modal-overlay hidden" id="viewStaffModal">
+        <div class="modal-container view-dialog">
+            <div class="modal-header">
+                <h3>Hồ sơ nhân viên</h3>
+                <button class="modal-close-btn" id="closeViewModalBtn" aria-label="Đóng">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body view-details-content" id="viewDetailsBody">
+                <!-- Điền bằng JS -->
+            </div>
+            <div class="modal-footer-actions" style="padding: 16px 24px;">
+                <button type="button" class="btn-secondary" id="closeViewBtn">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HỘP THOẠI ĐỔI MẬT KHẨU NHÂN VIÊN (QUICK EDIT) -->
+    <div class="modal-overlay hidden" id="editPasswordModal">
+        <div class="modal-container" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Đổi mật khẩu tài khoản</h3>
+                <button class="modal-close-btn" id="closeEditPassModalBtn" aria-label="Đóng">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="editPasswordForm" class="modal-form" style="padding: 20px;">
+                <input type="hidden" id="editPassStaffId">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="font-size: 14px;">Nhân viên: <strong id="editPassStaffName" style="color: var(--accent-red);"></strong></label>
+                </div>
+                <div class="form-group">
+                    <label for="newPasswordInput">Mật khẩu mới <span class="required">*</span></label>
+                    <input type="text" id="newPasswordInput" required placeholder="Nhập mật khẩu mới...">
+                </div>
+                <div class="modal-footer-actions" style="margin-top: 24px;">
+                    <button type="button" class="btn-secondary" id="cancelEditPassBtn">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu mật khẩu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="quanlynhanvien.js"></script>
+</body>
+</html>
