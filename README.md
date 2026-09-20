@@ -73,6 +73,8 @@ Mở dự án bằng trình soạn thảo (ví dụ: VS Code).
 Sử dụng extension Live Server để chạy file giao diện chính (index.html hoặc thư mục nguồn tương ứng) trên trình duyệt.
 
 ##🙏 Lời cảm ơn
+
+
 Em xin gửi lời cảm ơn chân thành đến TS. Nguyễn Văn Dũng – giảng viên hướng dẫn trực tiếp, đã tận tình định hướng phương pháp luận, hỗ trợ tháo gỡ các vướng mắc kỹ thuật để em hoàn thành xuất sắc đồ án này. Em cũng xin chân thành cảm ơn Ban Giám hiệu Trường Đại học Hùng Vương TP.HCM cùng Khoa Kỹ thuật Công nghệ đã tạo mọi điều kiện thuận lợi về cơ sở vật chất trong suốt quá trình học tập và nghiên cứu.
 
 © 2026 - Phát triển bởi Nguyễn Lê Thanh Tâm. Dành cho mục đích học tập và nghiên cứu khoa học.
